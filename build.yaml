@@ -8,9 +8,9 @@
 ---
 include:
   - board: nice_nano_v2
-    shield: yk_do52pro_left
+    shield: corne_tp_left
   - board: nice_nano_v2
-    shield: yk_do52pro_right
+    shield: corne_tp_right
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
   # Settings Reset firmware
