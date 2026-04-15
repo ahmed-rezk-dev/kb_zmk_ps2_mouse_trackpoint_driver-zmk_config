@@ -1,0 +1,133 @@
+/*
+ * Corne TP Keymap with PS/2 TrackPoint support
+ * 42 keys: 3 rows x 6 columns per half + 3 thumb keys per half
+ *
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+#define BASE 0
+#define LOWER 1
+#define MOUSE_KEYS 2
+#define MOUSE_TP 3
+#define MOUSE_TP_SET 4
+
+/*
+ * Feature flags - comment out to disable mouse features
+ */
+#define HAS_MOUSE_KEYS
+#define HAS_MOUSE_TP
+
+#ifdef HAS_MOUSE_KEYS
+  #include <dt-bindings/zmk/mouse.h>
+  #include <behaviors/mouse_keys.dtsi>
+#endif
+
+#ifdef HAS_MOUSE_TP
+  #include "include/mouse_tp.dtsi"
+#endif
+
+/*
+ * Layer toggle helpers based on enabled features
+ */
+#ifdef HAS_MOUSE_KEYS
+  #define U_THUMB_INNER &mo MOUSE_KEYS
+#else
+  #define U_THUMB_INNER &none
+#endif
+
+#ifdef HAS_MOUSE_TP
+  #define U_TOG_TP_SET &tog MOUSE_TP_SET
+#else
+  #define U_TOG_TP_SET &none
+#endif
+
+/*
+ * Keymap
+ */
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+
+        Base_layer {
+            display-name = "Base";
+            bindings = <
+// |  TAB |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U   |  I  |  O  |  P  | BKSP |
+// | CTRL |  A  |  S  |  D  |  F  |  G  |   |  H  |  J   |  K  |  L  |  ;  |  '   |
+// | SHFT |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M   |  ,  |  .  |  /  | ESC  |
+//                 | GUI | LWR | SPC |   | ENT | RSE  | ALT |
+ &kp TAB   &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSPC
+ &kp LCTRL &kp A &kp S &kp D &kp F &kp G   &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
+ &kp LSHFT &kp Z &kp X &kp C &kp V &kp B   &kp N &kp M  &kp COMMA &kp DOT &kp FSLH &kp ESC
+                   &mo LOWER &kp SPACE U_THUMB_INNER  U_THUMB_INNER &kp RET &mo LOWER &kp RALT
+            >;
+        };
+
+        Lower_layer {
+            display-name = "Lower";
+            bindings = <
+// |  TAB |  1  |  2  |  3  |  4  |  5  |   |  6  |  7  |  8  |  9  |  0  | BKSP |
+// | BTCLR| BT1 | BT2 | BT3 | BT4 | BT5 |   | LFT | DWN |  UP | RGT |     |      |
+// | SHFT |     |     |     |     |     |   |     |     |     |     |     |      |
+//                 | GUI |     | SPC |   | ENT |     | ALT |
+ &kp TAB    &kp N1       &kp N2       &kp N3       &kp N4       &kp N5         &kp N6   &kp N7   &kp N8 &kp N9    &kp N0 &kp BSPC
+ &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &kp LEFT &kp DOWN &kp UP &kp RIGHT &trans &trans
+ &kp LSHFT  &trans       &trans       &trans       &trans       &trans         &trans   &trans   &trans &trans    &trans &trans
+                              &kp LGUI     &trans       &kp SPACE      &kp RET  &trans   &kp RALT
+            >;
+        };
+
+#ifdef HAS_MOUSE_KEYS
+        MouseKeys_layer {
+            display-name = "MouseKeys";
+            bindings = <
+// |  1  |     |     | UP | SCR UP |     |   |     | SCR UP | UP |     |  1  |
+// |     |     | LFT | DWN| RGHT |     |   |     | LFT | DWN | RGHT |     |     |
+// |     |     |     |    | SCR DWN|     |   |     | SCR DWN |    |     |     |     |
+//                 | MCLK | LCLK | RCLK |   | MCLK | LCLK | RCLK |
+ U_TOG_TP_SET U_TOG_TP_SET       &none    &mmv MOVE_UP   &msc SCRL_UP  &none        &none   &msc SCRL_UP  &mmv MOVE_UP  &none  U_TOG_TP_SET U_TOG_TP_SET
+ &trans       &none             &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_RIGHT &none    &none   &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_RIGHT &none  &trans
+ &trans       &none             &none          &none          &msc SCRL_DOWN &none    &none   &msc SCRL_DOWN &none          &none          &trans &trans
+                                  &mkp MCLK    &mkp LCLK     &mkp RCLK    &mkp MCLK    &mkp LCLK    &mkp RCLK
+            >;
+        };
+#endif
+
+#ifdef HAS_MOUSE_TP
+        // Auto-activated when TrackPoint moves (configured in mouse_tp.dtsi)
+        MouseTP_layer {
+            display-name = "TP";
+            bindings = <
+// |  SET | SET |     | UP | SCR UP |     |   |     | SCR UP | UP |     | SET | SET |
+// |     |     | LFT | DWN| RGHT |     |   |     | LFT | DWN | RGHT |     |     |
+// |     |     |     |    | SCR DWN|     |   |     | SCR DWN |    |     |     |     |
+//                 | MCLK | LCLK | RCLK |   | MCLK | LCLK | RCLK |
+ U_TOG_TP_SET U_TOG_TP_SET &trans &trans &msc SCRL_UP &trans    &trans  &trans  &trans  &trans U_TOG_TP_SET U_TOG_TP_SET
+ &trans &trans &trans &trans &trans &trans    &trans  &trans  &trans  &trans  &trans &trans
+ &trans &trans &trans &trans &msc SCRL_DOWN &trans    &trans  &trans  &trans  &trans  &trans &trans
+                   &mkp MCLK &mkp LCLK &mkp RCLK    &mkp MCLK &mkp LCLK &mkp RCLK
+            >;
+        };
+
+        // TrackPoint settings layer
+        MouseSettings_layer {
+            display-name = "TP Set";
+            bindings = <
+// |  SET | SET |     | Sens- | Sens+ | PTS+ |   | PTS+ | Sens- | Sens+ |     | SET | SET |
+// |RESET |RESET|     | Inert-| Inert+| PTS- |   | PTS- | Inert-| Inert+|     |RESET |RESET|
+// |  LOG | LOG |     | Val6- | Val6+ |     |   |     | Val6- | Val6+ |     |  LOG | LOG |
+//                 |     | LCLK | RCLK |   |     | LCLK | RCLK |
+ U_TOG_TP_SET U_TOG_TP_SET &none U_MSS_TP_S_D U_MSS_TP_S_I U_MSS_TP_PT_I    U_MSS_TP_PT_I U_MSS_TP_S_D U_MSS_TP_S_I &none U_TOG_TP_SET U_TOG_TP_SET
+ U_MSS_RESET  U_MSS_RESET   &none U_MSS_TP_NI_D U_MSS_TP_NI_I U_MSS_TP_PT_D    U_MSS_TP_PT_D U_MSS_TP_NI_D U_MSS_TP_NI_I &none U_MSS_RESET U_MSS_RESET
+ U_MSS_LOG    U_MSS_LOG     &none U_MSS_TP_V6_D U_MSS_TP_V6_I &none          &none  U_MSS_TP_V6_D U_MSS_TP_V6_I &none  U_MSS_LOG   U_MSS_LOG
+                             &trans &mkp LCLK &mkp RCLK    &none &mkp LCLK &mkp RCLK
+            >;
+        };
+#endif
+    };
+};

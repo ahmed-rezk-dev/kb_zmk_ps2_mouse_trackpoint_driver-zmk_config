@@ -14,56 +14,43 @@ manifest:
   projects:
 
     #
-    # zmk fork
-    # Uncomment only one of these...
+    # ZMK fork
+    # Choose ONE of these options:
     #
-
-    # Standard, stable zmk repo without mouse PR.
-    # Not compatible with the PS/2 mouse & TP driver module.
-    - name: zmk
-      remote: zmkfirmware
-      revision: v0.2
-      import: app/west.yml
-
-    # infused-kim's zmk fork with mouse PR, which might be a bit outdated, but
-    # is known to be compatible with the PS/2 mouse & TP driver module.
-    #- name: zmk
-    #  remote: infused-kim
-    #  revision: pr-testing/mouse_ps2_module_base
-    #  import: app/west.yml
-
-    # pete's zmk fork with the most up to date mouse PR, which is more
-    # up-to-date, but may contain incompatibilities with the PS/2 mouse & TP
-    # driver module.
+    # Option 1: Official ZMK v0.2 (stable but may need mouse PR)
     # - name: zmk
-    #   remote: petejohanson
-    #   revision: feat/pointers-move-scroll
+    #   remote: zmkfirmware
+    #   revision: v0.2
     #   import: app/west.yml
 
-    # urob's zmk fork with mouse PR & many extra features, but may be
-    # incompatible with the PS/2 mouse & TP driver module.
+    # Option 2: petejohanson fork with latest mouse PR (recommended)
+    - name: zmk
+      remote: petejohanson
+      revision: feat/pointers-move-scroll
+      import: app/west.yml
+
+    # Option 3: infused-kim fork (known compatible with PS/2 module)
+    # - name: zmk
+    #   remote: infused-kim
+    #   revision: pr-testing/mouse_ps2_module_base
+    #   import: app/west.yml
+
+    # Option 4: urob fork with extras (may have incompatibilities)
     # - name: zmk
     #   remote: urob
     #   revision: main
     #   import: app/west.yml
 
-    # infused-kim's zmk fork with mouse PR AND urob's improvements, which
-    # might be out-dated, but is known to be compatible with PS/2 mouse & TP
-    # driver module.
-    # - name: zmk
-    #   remote: infused-kim
-    #   revision: pr-testing/mouse_ps2_module_base_urob
-    #   import: app/west.yml
-
     #
-    # Additional zmk modules
+    # Additional modules
     #
 
-    # Module for PS/2 mouse & TP driver
+    # PS/2 mouse & TrackPoint driver (from badjeff)
     - name: kb_zmk_ps2_mouse_trackpoint_driver
       remote: badjeff
       revision: main
 
+    # ZMK helpers
     - name: zmk-helpers
       remote: urob
       revision: v0.2

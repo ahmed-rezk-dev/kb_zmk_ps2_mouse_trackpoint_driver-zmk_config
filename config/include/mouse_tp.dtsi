@@ -1,0 +1,105 @@
+#ifdef HAS_MOUSE_TP
+  #include <dt-bindings/zmk/mouse.h>
+  #include <dt-bindings/zmk/mouse_settings.h>
+  #include <behaviors/mouse_keys.dtsi>
+  #include <behaviors/mouse_setting.dtsi>
+
+  /*
+   * TrackPoint setting adjustment behaviors
+   */
+
+  // Sensitivity adjustment
+  #define U_MSS_TP_S_I &mms MS_TP_SENSITIVITY_INCR
+  #define U_MSS_TP_S_D &mms MS_TP_SENSITIVITY_DECR
+
+  // Upper plateau speed (max acceleration)
+  #define U_MSS_TP_V6_I &mms MS_TP_VALUE6_INCR
+  #define U_MSS_TP_V6_D &mms MS_TP_VALUE6_DECR
+
+  // Negative inertia
+  #define U_MSS_TP_NI_I &mms MS_TP_NEG_INERTIA_INCR
+  #define U_MSS_TP_NI_D &mms MS_TP_NEG_INERTIA_DECR
+
+  // Press-to-select threshold
+  #define U_MSS_TP_PT_I &mms MS_TP_PTS_THRESHOLD_INCR
+  #define U_MSS_TP_PT_D &mms MS_TP_PTS_THRESHOLD_DECR
+
+  // Reset settings
+  #define U_MSS_RESET   &mms MS_RESET
+
+  // Log current settings
+  #define U_MSS_LOG     &mms MS_LOG
+
+
+  // Only apply on side with TrackPoint
+  #ifdef MOUSE_PS2_DT_PRESENT
+
+    /*
+     * Input Listener Config
+     */
+    &mouse_ps2_input_listener {
+      // xy-swap;
+      // x-invert;
+      // y-invert;
+
+      // Auto-activate layer when TP moves
+      layer-toggle = <MOUSE_TP>;
+
+      // Delay before layer activates (ms)
+      layer-toggle-delay-ms = <250>;
+
+      // Timeout before layer deactivates (ms)
+      layer-toggle-timeout-ms = <250>;
+    };
+
+    /*
+     * Mouse Driver Settings
+     */
+    &mouse_ps2 {
+      // Sensitivity (Default: 128)
+      // tp-sensitivity = <128>;
+
+      // Upper speed plateau (Default: 97)
+      // tp-val6-upper-speed = <97>;
+
+      // Negative inertia (Default: 6)
+      // tp-neg-inertia = <6>;
+
+      // Press-to-select (uncomment if supported)
+      // tp-press-to-select;
+      // tp-press-to-select-threshold = <10>;
+
+      // Axis adjustments
+      // tp-xy-swap;
+      // tp-x-invert;
+      // tp-y-invert;
+
+      // Sampling rate: 10,20,40,60,80,100,200 Hz
+      // sampling-rate = <60>;
+    };
+
+    // Enable devices
+    &mouse_ps2 {
+      status = "okay";
+    };
+
+    &mouse_ps2_input_listener {
+      status = "okay";
+    };
+
+    #ifdef MOUSE_PS2_DRIVER_UART
+      &uart0 {
+        status = "okay";
+      };
+
+      &uart_ps2 {
+        status = "okay";
+      };
+    #else
+      &gpio_ps2 {
+        status = "okay";
+      };
+    #endif
+
+  #endif  // MOUSE_PS2_DT_PRESENT
+#endif  // HAS_MOUSE_TP
