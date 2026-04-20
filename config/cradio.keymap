@@ -4,57 +4,14 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
-#include <dt-bindings/zmk/mouse.h>
 
-// Home row mods macro
-#define HRML(k1,k2,k3,k4) &ht LSHFT k1  &ht LALT k2  &ht LCTRL k3  &ht LGUI k4
-#define HRMR(k1,k2,k3,k4) &ht RGUI k1  &ht RCTRL k2  &ht RALT k3  &ht RSHFT k4
+// Layer definitions (same as original PS/2 config)
+#define BASE 0
+#define LOWER 1
+#define MOUSE_KEYS 2
+#define MOUSE_TP 3
+#define MOUSE_TP_SET 4
 
-// Hold tap for tap-preferred behavior
-&mt {
-    //  flavor = "tap-preferred";
-    // tapping_term_ms = <200>;
-};
-
-// Modifiers
-#define LEFT_HYPER LS(LC(LA(LGUI)))
-#define LH(key) LS(LC(LA(LG(key))))
-#define LHYPER LEFT_HYPER
-#define OFFICE LEFT_HYPER
-
-#define LEFT_MEH LS(LC(LALT))
-#define LM(key) LS(LC(LA(key)))
-#define LMEH LEFT_MEH
-
-
-#define LEFT_ULTRA LG(LC(LALT))
-#define LU(key) LG(LC(LA(key)))
-#define LULTRA LEFT_ULTRA
-
-#define RIGHT_HYPER RS(RC(RA(RGUI)))
-#define RH(key) RS(RC(RA(RG(key))))
-#define RHYPER RIGHT_HYPER
-
-#define RIGHT_MEH RS(RC(RALT))
-#define RM(key) RS(LC(RA(key)))
-#define RMEH RIGHT_MEH
-
-
-#define RIGHT_ULTRA RG(RC(RALT))
-#define RU(key) RG(RC(RA(key)))
-#define RULTRA RIGHT_ULTRA
-
-#define STICKY_KEY_TIMEOUT 60000
-
-&sk {
-    release-after-ms = <STICKY_KEY_TIMEOUT>;
-
-    /delete-property/ ignore-modifiers;
-};
-
-/*
- * TrackPoint support (optional)
- */
 #define HAS_MOUSE_KEYS
 #define HAS_MOUSE_TP
 
@@ -68,6 +25,23 @@
   #include <behaviors/mouse_keys.dtsi>
   #include <behaviors/mouse_setting.dtsi>
   #include "include/mouse_tp.dtsi"
+#endif
+
+// Homery mods macro for cradio
+#define HRML(k1,k2,k3,k4) &ht LSHFT k1  &ht LALT k2  &ht LCTRL k3  &ht LGUI k4
+#define HRMR(k1,k2,k3,k4) &ht RGUI k1  &ht RCTRL k2  &ht RALT k3  &ht RSHFT k4
+
+// Layer toggle helpers
+#ifdef HAS_MOUSE_KEYS
+  #define U_THUMB_INNER &mo MOUSE_KEYS
+#else
+  #define U_THUMB_INNER &none
+#endif
+
+#ifdef HAS_MOUSE_TP
+  #define U_TOG_TP_SET &tog MOUSE_TP_SET
+#else
+  #define U_TOG_TP_SET &none
 #endif
 
 / {
@@ -93,7 +67,10 @@
 
     keymap {
         compatible = "zmk,keymap";
+
+        // Layer 0: Base
         default_layer {
+            display-name = "Base";
             bindings = <
         //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
         //│  Q       │  W       │  E       │  R       │  T       │   │  Y       │  U       │  I       │  O       │  P       │
@@ -101,16 +78,17 @@
         //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
         //│  A       │  S       │  D       │  F       │  G       │   │  H       │  J       │  K       │  L       │ ' "      │
             HRML(A,        S,         D,         F)     &kp G          &kp H      HRMR(J,        K,         L,        SQT)
-        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────���
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
         //│  Z       │  X       │  C       │  V       │  B       │   │  N       │  M       │ , <      │ . >      │ / ?      │
             &kp Z      &kp X      &kp C      &kp V      &kp B          &kp N      &kp M      &kp COMMA  &kp DOT    &kp FSLH
         //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
-                                     &lt 2 TAB   &lt 4 ENTER     &kp SPACE  &lt 1 BSPC
-        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
+                                     &mo LOWER &kp SPACE U_THUMB_INNER  U_THUMB_INNER &kp RET  &mo LOWER
             >;
         };
 
+        // Layer 1: Lower
         right_layer {
+            display-name = "Lower";
             bindings = <
         //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
         //│ INSERT   │  1       │  2       │  3       │          │   │ HOME     │ PAGE DN  │ PAGE UP  │ END      │  :       │
@@ -123,61 +101,59 @@
            &caps_word  &kp N7     &kp N8     &kp N9     &kp N0         &trans     &trans     &trans     &trans     &trans
         //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
                                              &trans     &kp ESC        &trans     &trans
-        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
             >;
         };
-
-        left_layer {
-            bindings = <
-        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
-        //│          │  [       │  {       │  }       │          │   │  ^       │  (       │  )       │  ]       │  ~       ��
-            &trans     &kp LBKT   &kp LBRC   &kp RBRC   &trans         &kp CARET  &kp LPAR   &kp RPAR   &kp RBKT   &kp TILDE
-        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
-        //│  !       │  @       │  #       │  $       │  %       │   │  *       │  -       │  =       │  \       │  `       │
-            &kp EXCL   &kp AT     &kp HASH   &kp DLLR   &kp PRCNT      &kp ASTRK  &kp MINUS  &kp EQUAL  &kp BSLH   &kp GRAVE
-        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
-        //│          │          │          │          │          │   │  &       │  _       │  +       │  │       │          │
-            &trans     &trans     &trans     &trans     &trans         &kp AMPS   &kp UNDER  &kp PLUS   &kp PIPE   &trans
-        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
-                                             &trans     &trans         &trans     &trans
-        //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
-            >;
-        };
-
-         tri_layer {
-             bindings = <
-         //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
-         //│ RESET    │          │          │          │PROFILE 0 │   │          │          │          │          │  RESET   │
-            &sys_reset  &trans     &trans     &trans    &bt BT_SEL 0    &trans     &trans     &trans     &trans    &sys_reset
-         //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
-         //│BOOTLOADER│          │          │          │PROFILE 1 │   │          │          │          │          │BOOTLOADER│
-           &bootloader  &trans     &trans     &trans    &bt BT_SEL 1    &trans     &trans     &trans     &trans    &bootloader
-         //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
-         //│          │          │          │ CLEAR BT │PROFILE 2 │   │          │          │          │          │          │
-         &trans     &trans     &trans    &bt BT_CLR &bt BT_SEL 2    &trans     &trans     &trans     &trans    &trans
-         //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
-                                              &trans     &trans         &trans     &trans
-         //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
-              >;
-          };
 
 #ifdef HAS_MOUSE_KEYS
-         mouse_layer {
-             bindings = <
-          //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
-          //│          │SCRL_LEFT │ SCRL_UP  │SCRL_RIGHT│          │   │  BTN5    │  BTN4    │   UP     │          │          │
-             &trans     &msc SCRL_LEFT &msc SCRL_UP &msc SCRL_RIGHT &trans &mkp MB5 &mkp MB4 &mmv MOVE_UP &trans &trans &trans
-         //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
-         //│          │  LCLK    │SCRL_DOWN │  RCLK    │          │   │          │  LEFT    │  DOWN    │  RIGHT   │          │
-            &trans     &mkp MB1 &msc SCRL_DOWN &mkp MB2 &trans         &trans     &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_RIGHT &trans
-         //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
-         //│          │          │          │          │          │   │          │          │          │          │          │
-            &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans     &trans     &trans
-         //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
-                                              &trans     &trans         &trans     &trans
-         //                                 ╰──────────┴──────────╯   ╰──────────┴──────────╯
-             >;
-         };
+        // Layer 2: Mouse keys
+        MouseKeys_layer {
+            display-name = "MouseKeys";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+        //│  SET     │          │         UP│ SCR UP   │          │   │          │ SCR UP   │  UP      │          │  SET     │
+         U_TOG_TP_SET U_TOG_TP_SET  &none    &mmv MOVE_UP &msc SCRL_UP  &none      &none  &msc SCRL_UP &mmv MOVE_UP &none  U_TOG_TP_SET U_TOG_TP_SET
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│          │  LFT    │  DWN    │  RGT    │          │   │          │  LFT    │  DWN    │  RGT    │          │
+            &trans  &none    &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_RIGHT &none      &none &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_RIGHT &none &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+        //│          │          │         │  SCR DN  │          │   │          │ SCR DN   │          │          │          │
+            &trans  &none    &none    &none    &msc SCRL_DOWN &none      &none &msc SCRL_DOWN &none    &none    &trans &trans
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                        &mkp MCLK    &mkp LCLK   &mkp RCLK      &mkp MCLK   &mkp LCLK   &mkp RCLK
+            >;
+        };
 #endif
-      };
+
+#ifdef HAS_MOUSE_TP
+        // Layer 3: Mouse TP (auto-activated when TrackPoint moves)
+        MouseTP_layer {
+            display-name = "TP";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+         U_TOG_TP_SET U_TOG_TP_SET  &trans &trans &msc SCRL_UP &trans      &trans  &trans  &trans  &trans U_TOG_TP_SET U_TOG_TP_SET
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+            &trans &trans &trans &trans &trans &trans      &trans &trans &trans &trans &trans &trans
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+            &trans &trans &trans &trans &msc SCRL_DOWN &trans      &trans &trans &trans &trans &trans &trans
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                        &mkp MCLK    &mkp LCLK   &mkp RCLK      &mkp MCLK   &mkp LCLK   &mkp RCLK
+            >;
+        };
+
+        // Layer 4: Mouse TP Settings
+        MouseSettings_layer {
+            display-name = "TP Set";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────╮
+         U_TOG_TP_SET U_TOG_TP_SET &none U_MSS_TP_S_D U_MSS_TP_S_I U_MSS_TP_PT_I    U_MSS_TP_PT_I U_MSS_TP_S_D U_MSS_TP_S_I &none U_TOG_TP_SET U_TOG_TP_SET
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+         U_MSS_RESET   U_MSS_RESET   &none U_MSS_TP_NI_D U_MSS_TP_NI_I U_MSS_TP_PT_D    U_MSS_TP_PT_D U_MSS_TP_NI_D U_MSS_TP_NI_I &none U_MSS_RESET U_MSS_RESET
+        //├──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┤
+           U_MSS_LOG    U_MSS_LOG    &none U_MSS_TP_V6_D U_MSS_TP_V6_I &none         &none  U_MSS_TP_V6_D U_MSS_TP_V6_I &none  U_MSS_LOG  U_MSS_LOG
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┴──────────┴──────────╯
+                                        &trans     &mkp LCLK    &mkp RCLK        &none    &mkp LCLK   &mkp RCLK
+            >;
+        };
+#endif
+    };
 };
