@@ -2,6 +2,7 @@
 #
 # Build configurations:
 # - corne_tp_left/right: Standard Corne with PS/2 TrackPoint support
+# - cradio_left/right: Cradio 34-key split keyboard
 # - Alternative pins build: Uses high-frequency pins D1/D0 instead of D16/D10
 # - settings_reset: For wiping BLE pairings
 #
@@ -19,6 +20,12 @@ include:
     shield: corne_tp_right
     cmake-args: -DDTS_EXTRA_CPPFLAGS=-DMOUSE_PS2_ALT_PINS
     artifact-name: corne_tp_right-alt-pins
+
+  # Cradio (34-key split keyboard)
+  - board: nice_nano_v2
+    shield: cradio_left
+  - board: nice_nano_v2
+    shield: cradio_right
 
   # Settings Reset firmware
   # Wipes all settings - useful for Bluetooth pairing issues

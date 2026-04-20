@@ -1,0 +1,29 @@
+# Central side configuration
+# Cradio can work as left or right central
+
+if SHIELD_CRADIO_RIGHT
+
+config ZMK_KEYBOARD_NAME
+    default "Cradio"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_CRADIO_LEFT || SHIELD_CRADIO_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+if ZMK_DISPLAY
+
+config I2C
+    default y
+
+config SSD1306
+    default y
+
+endif
+
+endif
