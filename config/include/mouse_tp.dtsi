@@ -43,7 +43,8 @@
       // y-invert;
 
       // Auto-activate layer when TP moves
-      layer-toggle = <MOUSE_TP>;
+      // Cradio: mouse_layer is layer 4
+      layer-toggle = <4>;
 
       // Delay before layer activates (ms)
       layer-toggle-delay-ms = <250>;
