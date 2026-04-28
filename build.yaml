@@ -9,9 +9,9 @@
 include:
   # Corne TP with TrackPoint
   - board: nice_nano_v2
-    shield: corne_tp_left
+    shield: corne_tp_left nice_view_adapter nice_view
   - board: nice_nano_v2
-    shield: corne_tp_right
+    shield: corne_tp_right nice_view_adapter nice_view
 
   # Alternative PINs firmware (high frequency pins)
   # Uses D1 (SCL), D0 (SDA) - compatible with keyboards without underglow
