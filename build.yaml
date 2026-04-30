@@ -15,10 +15,10 @@ include:
 
   # Alternative PINs firmware (high frequency pins)
   # Uses D1 (SCL), D0 (SDA) - compatible with keyboards without underglow
-  - board: nice_nano_v2
-    shield: corne_tp_right
-    cmake-args: -DDTS_EXTRA_CPPFLAGS=-DMOUSE_PS2_ALT_PINS
-    artifact-name: corne_tp_right-alt-pins
+  # - board: nice_nano_v2
+  #   shield: corne_tp_right
+  #   cmake-args: -DDTS_EXTRA_CPPFLAGS=-DMOUSE_PS2_ALT_PINS
+  #   artifact-name: corne_tp_right-alt-pins
 
   # Settings Reset firmware
   # Wipes all settings - useful for Bluetooth pairing issues
